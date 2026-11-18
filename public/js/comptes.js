@@ -80,6 +80,7 @@ function mettreAJourProfilUI(user) {
   const userAvatarEl = document.getElementById('navbar-user-avatar');
   const userRoleEl = document.getElementById('navbar-user-role');
   const adminBadgeEl = document.getElementById('navbar-admin-badge');
+  const navAdminItemEl = document.getElementById('nav-admin-item');
 
   if (user) {
     const prenom = user.prenom || 'Client';
@@ -88,11 +89,13 @@ function mettreAJourProfilUI(user) {
     if (userAvatarEl) userAvatarEl.textContent = (prenom.charAt(0) + (nom ? nom.charAt(0) : '')).toUpperCase();
     if (userRoleEl) userRoleEl.textContent = user.is_admin ? 'Administrateur' : 'Client Particulier';
     if (adminBadgeEl) adminBadgeEl.style.display = user.is_admin ? 'inline-flex' : 'none';
+    if (navAdminItemEl) navAdminItemEl.style.display = user.is_admin ? 'block' : 'none';
   } else {
     if (userNameEl) userNameEl.textContent = 'Espace Démo';
     if (userAvatarEl) userAvatarEl.textContent = 'KB';
     if (userRoleEl) userRoleEl.textContent = 'Client';
     if (adminBadgeEl) adminBadgeEl.style.display = 'none';
+    if (navAdminItemEl) navAdminItemEl.style.display = 'none';
   }
 }
 

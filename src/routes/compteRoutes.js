@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/', auth, compteController.creerCompte);
 router.get('/', auth, compteController.getMesComptes);
+router.get('/tous', auth, isAdmin, compteController.getTousLesComptes);
 router.get('/:id', auth, compteController.getDetailCompte);
 router.delete('/:id', auth, compteController.supprimerCompte);
 router.patch('/:id/statut', auth, isAdmin, compteController.modifierStatut);

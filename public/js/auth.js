@@ -84,8 +84,8 @@ async function handleLogin(event) {
     const { ok, data } = await postJson('/api/auth/login', { email, mot_de_passe });
     if (!ok) return showServerErrors(data);
 
-    // Connecté : le cookie est posé par le serveur, on va au tableau de bord.
-    window.location.href = '/dashboard.html';
+    // Connecté : le cookie est posé par le serveur, on redirige vers l'espace admin ou le tableau de bord.
+    window.location.href = data.user?.is_admin ? '/admin.html' : '/dashboard.html';
   } catch (erreur) {
     showMessage('Impossible de contacter le serveur.');
   } finally {
@@ -168,10 +168,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     registerForm.addEventListener('submit', handleRegister);
   }
 
-  // Déjà connecté sur la page de connexion ou d'inscription ? → tableau de bord.
+  // Déjà connecté sur la page de connexion ou d'inscription ? → espace admin ou tableau de bord.
   if (loginForm || registerForm) {
     const res = await fetch('/api/auth/me');
-    if (res.ok) window.location.href = '/dashboard.html';
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      window.location.href = data.user?.is_admin ? '/admin.html' : '/dashboard.html';
+    }
   }
 
   // Tous les boutons data-logout de la page déconnectent l'utilisateur.

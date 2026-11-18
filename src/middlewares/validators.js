@@ -51,10 +51,10 @@ export const updateProfileRules = [
     body('prenom').optional().trim().notEmpty().withMessage('Le prénom ne peut pas être vide.')
         .isLength({ max: 100 }).withMessage('Le prénom est trop long.'),
     body('email').optional().trim().toLowerCase().isEmail().withMessage('Email invalide.'),
-    body('telephone').optional().trim().matches(/^\d{10}$/).withMessage('Le téléphone doit contenir 10 chiffres.'),
-    body('adresse_postale').optional().trim()
+    body('telephone').optional({ values: 'falsy' }).trim().matches(/^\d{10}$/).withMessage('Le téléphone doit contenir 10 chiffres.'),
+    body('adresse_postale').optional({ values: 'falsy' }).trim()
         .isLength({ max: 255 }).withMessage("L'adresse est trop longue."),
-    body('date_naissance').optional()
+    body('date_naissance').optional({ values: 'falsy' })
         .isISO8601().withMessage('Date de naissance invalide (format AAAA-MM-JJ).')
 ];
 

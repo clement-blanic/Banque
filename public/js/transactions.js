@@ -355,6 +355,9 @@
     try {
       const { user } = await getJson('/api/auth/me');
       $('user-name').textContent = `${user.prenom} ${user.nom}`;
+      if (user.is_admin && $('nav-admin-link')) {
+        $('nav-admin-link').hidden = false;
+      }
     } catch {
       return;
     }

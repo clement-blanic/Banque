@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Administrateur - KampusBank</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <!-- Barre du haut : navigation + administrateur connecté -->
+  <header class="topbar">
+    <a href="/dashboard.html" class="logo">KampusBank</a>
+    <nav class="topbar-nav" aria-label="Navigation principale">
+      <a href="/dashboard.html">Mes comptes</a>
+      <a href="/transactions.html">Transactions</a>
+      <a href="/admin.html" aria-current="page">Administration</a>
+    </nav>
+    <div class="topbar-user">
+      <span class="badge badge-admin">Admin</span>
+      <span id="user-name" class="muted">…</span>
+      <button type="button" class="btn-link" data-logout>Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Espace Administrateur</h1>
+
+    <!-- Messages de succès / d'erreur -->
+    <p id="admin-message" class="message" role="status" aria-live="polite" hidden></p>
+
+    <!-- ===================== 1. STATISTIQUES ===================== -->
+    <section class="stats-grid" aria-label="Statistiques globales">
+      <div class="card stat-card">
+        <span class="muted small">Nombre total de clients</span>
+        <strong id="stat-clients" class="stat-val">—</strong>
+      </div>
+      <div class="card stat-card">
+        <span class="muted small">Nombre total de comptes</span>
+        <strong id="stat-comptes" class="stat-val">—</strong>
+      </div>
+      <div class="card stat-card">
+        <span class="muted small">Somme totale des dépôts</span>
+        <strong id="stat-depots" class="stat-val credit">—</strong>
+      </div>
+    </section>
+
+    <!-- ===================== 2. GESTION DES CLIENTS ===================== -->
+    <section class="card section-block" aria-labelledby="titre-clients">
+      <div class="card-head">
+        <h2 id="titre-clients">Gestion des clients</h2>
+        <span id="clients-etat" class="muted small"></span>
+      </div>
+
+      <!-- Recherche par nom, email ou numéro de compte (IBAN) -->
+      <form id="search-form" class="search-bar" novalidate>
+        <input type="search" id="search-input" placeholder="Rechercher un client par nom, email ou numéro de compte (IBAN)…">
+        <button type="submit" class="btn btn-sm">Rechercher</button>
+        <button type="button" id="btn-reset-search" class="btn btn-sm btn-secondary">Tout afficher</button>
+      </form>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nom & Prénom</th>
+              <th scope="col">Email</th>
+              <th scope="col">Téléphone</th>
+              <th scope="col" class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="clients-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Détail d'un client, modification de ses infos et liste de ses comptes -->
+    <section id="client-detail-card" class="card section-block" aria-labelledby="titre-detail-client" hidden>
+      <div class="card-head">
+        <h2 id="titre-detail-client">Détail du client</h2>
+        <button type="button" id="btn-fermer-client" class="btn-link">Fermer</button>
+      </div>
+
+      <div class="detail-layout">
+        <!-- Formulaire de modification des informations du client -->
+        <form id="client-edit-form" novalidate>
+          <h3>Informations personnelles</h3>
+          <div class="row">
+            <div class="field">
+              <label for="edit-prenom">Prénom</label>
+              <input type="text" id="edit-prenom" name="prenom" required>
+            </div>
+            <div class="field">
+              <label for="edit-nom">Nom</label>
+              <input type="text" id="edit-nom" name="nom" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="edit-email">Email</label>
+              <input type="email" id="edit-email" name="email" required>
+            </div>
+            <div class="field">
+              <label for="edit-telephone">Téléphone</label>
+              <input type="tel" id="edit-telephone" name="telephone" placeholder="0612345678">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="edit-date-naissance">Date de naissance</label>
+              <input type="date" id="edit-date-naissance" name="date_naissance">
+            </div>
+            <div class="field">
+              <label for="edit-adresse">Adresse postale</label>
+              <input type="text" id="edit-adresse" name="adresse_postale">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btn-save-client" class="btn btn-sm">Enregistrer les modifications</button>
+            <button type="button" id="btn-delete-client" class="btn btn-sm btn-danger">Supprimer ce client</button>
+          </div>
+        </form>
+
+        <!-- Comptes bancaires de ce client spécifique -->
+        <div>
+          <h3>Comptes bancaires du client</h3>
+          <p id="client-comptes-etat" class="muted small"></p>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Type</th>
+                  <th scope="col">IBAN</th>
+                  <th scope="col" class="num">Solde</th>
+                  <th scope="col">Statut</th>
+                  <th scope="col" class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="client-comptes-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 3. GESTION DES COMPTES ===================== -->
+    <section class="card section-block" aria-labelledby="titre-comptes">
+      <div class="card-head">
+        <h2 id="titre-comptes">Gestion des comptes bancaires</h2>
+        <span id="comptes-etat" class="muted small"></span>
+      </div>
+
+      <!-- Filtre pour voir tous les comptes ou ceux d'un client spécifique -->
+      <div class="filter-bar">
+        <label for="filtre-client-select">Afficher les comptes de :</label>
+        <select id="filtre-client-select">
+          <option value="">Tous les clients</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Client</th>
+              <th scope="col">Type</th>
+              <th scope="col">Numéro de compte (IBAN)</th>
+              <th scope="col" class="num">Solde</th>
+              <th scope="col">Statut</th>
+              <th scope="col" class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="comptes-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== 4. HISTORIQUE D'UN COMPTE ===================== -->
+    <section id="historique-card" class="card section-block" aria-labelledby="titre-historique" hidden>
+      <div class="card-head">
+        <div>
+          <h2 id="titre-historique">Historique des transactions du compte</h2>
+          <p id="historique-compte-info" class="muted small"></p>
+        </div>
+        <button type="button" id="btn-fermer-historique" class="btn-link">Fermer</button>
+      </div>
+
+      <p id="historique-etat" class="muted small"></p>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Opération</th>
+              <th scope="col">Libellé</th>
+              <th scope="col" class="num">Montant</th>
+            </tr>
+          </thead>
+          <tbody id="historique-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
